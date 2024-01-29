@@ -1,6 +1,12 @@
 package main
 
-import "github.com/victor-rva/projeto01_GO/internal/entity"
+import (
+	"database/sql"
+
+	"github.com/victor-rva/projeto01_GO/internal/infra/database"
+	"github.com/victor-rva/projeto01_GO/internal/usecase"
+	_ "github.com/mattn/go-sqlite3"
+)
 
 //import "honnef.co/go/tools/printf"
 
@@ -19,7 +25,7 @@ func (c Car) Start() {
 // 	println("New color: " + c.Color)
 // }
 
-func (c *Car) ChangeColor(color string){ // o * serve como ponteiro para indicar que a mudança do valor vai ser direto da memória we não uma cópia
+func (c *Car) ChangeColor(color string) { // o * serve como ponteiro para indicar que a mudança do valor vai ser direto da memória we não uma cópia
 	c.Color = color
 	println("New color: " + c.Color)
 }
@@ -30,13 +36,34 @@ func soma(x int, y int) int {
 }
 
 func main() {
-	order, err := entity.NewOrder("1",10,1)
-	if err != nil{
-		println(err.Error())
-	} else{
-		println(order.ID)
+	db, err := sql.Open("sqlite3", "db.sqlite3")
+	if err != nil {
+		panic(err)
 	}
+	orderRepository := database.NewOrderRepository(db)
+	uc := usecase.NewCalculateFinalPrice(orderRepository)
+
+	input := usecase.OrderInput{
+		ID:    "123",
+		Price: 10.0,
+		Tax:   1.0,
+	}
+	// usecase.Execute(input)
+	output, err := uc.Execute(input)
+	if err != nil{
+		panic(err)
+	}
+	println(output)
 }
+
+// func main() {
+// 	order, err := entity.NewOrder("1",10,1)
+// 	if err != nil{
+// 		println(err.Error())
+// 	} else{
+// 		println(order.ID)
+// 	}
+// }
 
 // func main() {
 // 	car := Car{ // declarando e atribuindo variavel car, serve para não precisar declarar antes a variavel
