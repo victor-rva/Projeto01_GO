@@ -2,10 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/victor-rva/projeto01_GO/internal/infra/database"
 	"github.com/victor-rva/projeto01_GO/internal/usecase"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 //import "honnef.co/go/tools/printf"
@@ -40,20 +41,21 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer db.Close() //defer espera tudo rodar e depois execeuta o close (que encerra a conexão)
 	orderRepository := database.NewOrderRepository(db)
 	uc := usecase.NewCalculateFinalPrice(orderRepository)
 
 	input := usecase.OrderInput{
-		ID:    "123",
+		ID:    "1234",
 		Price: 10.0,
 		Tax:   1.0,
 	}
 	// usecase.Execute(input)
 	output, err := uc.Execute(input)
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
-	println(output)
+	fmt.Println(output)
 }
 
 // func main() {
