@@ -27,10 +27,10 @@ func main() {
 		panic(err)
 	}
 	defer ch.Close()
-	msgRabbitmqChannel := make(chan amqp.Delivery)
+	msgRabbitmqChannel := make(chan amqp.Delivery) // criando um canal do tipo amqpDelivery
 	go rabbitmq.Consume(ch, msgRabbitmqChannel) //escutando a fila // O go na frente faz com que seja uma thread 2
 	rabbitmqWorker(msgRabbitmqChannel, uc) // thread 1
-	// em uma thread ele le os dado do rabbitmq, os dados que recebe ele joga no canal, o worker le o canal pega os dados executa o usecase e coloca no banco de dados
+	// em uma thread ele le os dado do rabbitmq, os dados que recebe ele joga no canal msgRabbitmqChannel, o worker le o canal, pega os dados, executa o usecase e coloca no banco de dados.
 
 	// input := usecase.OrderInput{
 	// 	ID:    "1234",
